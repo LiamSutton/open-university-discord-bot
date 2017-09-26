@@ -1,0 +1,22 @@
+{
+  "name": "discord-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bot.js",
+  "scripts": {
+    "start": "nodemon bot.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LiamSutton/discord-bot.git"
+  },
+  "author": "Liam Sutton",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LiamSutton/discord-bot/issues"
+  },
+  "homepage": "https://github.com/LiamSutton/discord-bot#readme",
+  "dependencies": {
+    "discord.js": "^11.2.1"
+  }
+}
