@@ -1,6 +1,6 @@
 const discord = require('discord.js')
 const config = require('./config.json')
-
+const tmas = require('./tma.json')
 const client = new discord.Client()
 
 // When the bot is ready for use
@@ -76,6 +76,13 @@ client.on('message', message => {
             // This command will give the user a link to the projects github!
             case '!SOURCE':
                 sender.send(`I am open source! Github: https://github.com/LiamSutton/discord-bot`)
+                break
+
+            // This command will give the user a list of all the tma's for the module with their cutt-off date
+            case '!TMAS':
+                let results = ""
+                tmas.assignments.forEach(assignment => results += `Name: ${assignment.name}\nCut-off date: ${assignment.end} \n\n`)
+                sender.send(results)
                 break
 
             // If the command isn't recognised, let the user know
