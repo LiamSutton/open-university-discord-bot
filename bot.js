@@ -5,7 +5,7 @@ const client = new discord.Client()
 
 // When the bot is ready for use
 client.on('ready', () => {
-    console.log("OU-HELPER-BOT LOADED")
+    console.log("OU-HELPER-BOT LOADED") 
 })
 
 // When the bot recieves a message
@@ -21,7 +21,7 @@ client.on('message', message => {
     if (sender.bot) return
 
     // Log that a message was recieved and who the message was sent from
-    console.log(`[INFO] Message recieved from ${sender.username}`)
+    console.log(`Message recieved from ${sender.username}`)
 
     // If the message will be treated as a command
     if (isCommand) {
@@ -85,11 +85,20 @@ client.on('message', message => {
                 sender.send(results)
                 break
 
+            // This command will give the user a list of all the commands the bot can use
+            case '!HELP':
+                sender.send("Commands: !hi, !mods, !source, !info, !tmas and of course you allready know about the !help command")
+                break
             // If the command isn't recognised, let the user know
             default:
             sender.send(`Hmm.. I didnt quite get that, to show all my commands type '!help'`)
         }
     }
+})
+
+// When a new person joins the guild, the bot will introduce itself!
+client.on('guildMemberAdd', member => {
+    member.send("Hi there I'm the ou-helper-bot, to get my commands list just type !help")
 })
 
 client.login(config.token)
