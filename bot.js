@@ -51,26 +51,32 @@ client.on('message', message => {
             // This command will grab a list of people with Admin privelages and inform the user of their usernames
             /*
             TODO:
-            1) Rewrite code so it can be used for multiple guilds (possibly) / to find diferent roles
-            2) Filter the array to only include mods that are online / available
-            3) Code seems kinda janky, look into cleaner ways to do this 
+            1) Rewrite code so it can be used for multiple guilds (possibly) or to find diferent roles
+            2) Code seems kinda janky, look into cleaner ways to do this 
             */
             case '!MODS':
                 // String to hold the list of results
                 let result = "List of Mods: "
+                let online = "List of online Mods: "
 
                 // Reason this line is long is because when this command was used through PM it crashed the app!
                 // So instead of searching through the sender we search relative to the bot's guild!
                 let admins = client.guilds.find("name", "Test").roles.find("name", "Admin").members
+
+                // Once we have the list of all admins, filter the list to only include admins that are online at that moment
+                let onlineAdmins = admins.filter(admin => admin.presence.status == "online")
                 
                 // Iterate over the found results and add them to the result string (seperating them with ', ')
                 admins.forEach(admin => result += admin.user.username + ", ")
+                onlineAdmins.forEach(admin => online += admin.user.username + ", ")
 
                 // The reason for this is because the last result being added in the loop will add an extra ', ' to the string
                 // We just remove this ¯\_(ツ)_/¯
                 result = result.substr(0, result.length -2)
+                online = online.substr(0, online.length -2)
                 
-                sender.send(result)
+                // Concatenate the two collection's together and send them to the user
+                sender.send(result + "\n" + online)
                 break
             
             // This command will give the user a link to the projects github!
