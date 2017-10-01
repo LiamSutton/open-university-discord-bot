@@ -9,7 +9,7 @@ const client = new discord.Client()
 // When the bot is ready for use
 client.on('ready', () => {
     console.log("OU-HELPER-BOT LOADED")
-    
+
     // Inform the Guild that the bot is now online
     client.guilds.find("name", "Test").channels.find("name", "general").send("Hello World!")
 })
@@ -69,13 +69,13 @@ client.on('message', message => {
                     sender.send(result)
                 })
                 break
-            
+
             // This command will allow the user to search for a specific definition
             case '!DEFINITION':
-                
+
                 // To get the word the user is searching for we split the message into an array and grab the 2nd item (1's index)
                 let searchTerm = message.content.split(' ')[1]
-                
+
                 // We load the json file that contains all of the current definitions
                 fs.readFile('./definitions.json', 'utf-8', (err, data) => {
 
@@ -88,7 +88,7 @@ client.on('message', message => {
                     // To find the definition the user is after we filter the list to only contain definitions which word matches the search term
                     // and grab the first one
                     let find = information.definitions.filter(definition => definition.word == searchTerm)[0]
-                    
+
                     // We know that if the definition has been found the find variable will not be undefined
                     let found = find != undefined
 
@@ -196,7 +196,17 @@ client.on('message', message => {
 
             // This command will give the user a list of all the commands the bot can use
             case '!HELP':
-                sender.send("Commands: !hi, !mods, !source, !info, !tmas and of course you allready know about the !help command")
+                let result = `Available Commands: \n \n`
+                result += `!hi : This command will simply greet you! \n \n`
+                result += `!tmas : This command will list all of the TMA's for this module including their cut-off dates! \n \n`
+                result += `!source : This command will provide you with a link to the github page for this project so you can contribute! \n \n`
+                result += `!mods : This command will provide you with a list of all the Admins for the server and a list of all the Admins currenly online! \n \n`
+                result += `!info : This command will provide you with some basic info about the bot! \n \n`
+                result += `!alldefinitions : This command will list all the definitians of jargon-y words I know and fellow students have taught me! \n \n`
+                result += `!definition : This command will let you search for a specific definition to use it type the command followed by a space and then the word you're searching for! eg: !definition test \n \n`
+                result += `!define : This command will allow you to teach me a new word and its definition to help your fellow students, to use this type the command followed by a space and then the word you want to teach me followed by another space then just type a sentence with the definition of it (you can use spaces!) eg: !define test this is a test \n \n`
+                result += `!help : Well you clearly allready know this command!, this will simply list all of my currently known commands to you :smiley:`
+                sender.send(result)
                 break
 
             // If the command isn't recognised, let the user know
