@@ -1,3 +1,5 @@
+"use strict"
+
 const discord = require('discord.js')
 const fs = require('fs')
 const config = require('./config.json')
@@ -7,11 +9,11 @@ const client = new discord.Client()
 // When the bot is ready for use
 client.on('ready', () => {
     console.log("OU-HELPER-BOT LOADED")
+    
 })
 
 // When the bot recieves a message
 client.on('message', message => {
-
     // Capture the sender of the message
     let sender = message.author
 
