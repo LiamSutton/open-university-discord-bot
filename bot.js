@@ -42,46 +42,79 @@ client.on('message', message => {
             case '!HI':
                 sender.send(`Hi there ${sender.username} how are you!?`)
                 break
-            
-            case '!DEFENITIONS':
-                fs.readFile('./defenition.json', 'utf-8', (err, data) => {
+
+            // A command to list all of the definitions for words that people may have dificulty with
+            case '!DEFINITIONS':
+
+                // Read the file containing all of the current definitions
+                fs.readFile('./definitions.json', 'utf-8', (err, data) => {
+
+                    // if there is an issue with this throw the error
                     if (err) throw err
 
-                    let obj = JSON.parse(data)
-                    let result = ''
-                    obj.defenitions.forEach(defenition => result += `${defenition.word} : ${defenition.defenition} \n \n`)
+                    // Parse the information held inside the file
+                    let information = JSON.parse(data)
 
+                    // Create an empty string to hold the definitions
+                    let result = ''
+
+                    // For every definition, append the word to the results string formatted as so (word : definition)
+                    information.definitions.forEach(definition => result += `${definition.word} : ${definition.definition} \n \n`)
+
+                    // After all the definitions have been gathered send them to the user
                     sender.send(result)
                 })
                 break
 
             case '!DEFINE':
-                let fullMessage = message.content.split(' ').filter(word => word != command.toLowerCase())
-                let word = fullMessage[0]
-                let defenition = fullMessage.slice(1).join(" ")
+                //TODO: Tidy up and refactor possibly to ensure no duplicates can be added
 
-                fs.readFile('./defenition.json', 'utf-8', (err, data) => {
+                // To get both the word to define and the defenition we split the recieved message into an array
+                // we then filter the array to only include words that aren't the command (!DEFINE)
+                let fullMessage = message.content.split(' ').filter(word => word != command.toLowerCase())
+
+                // To get the word to define we simply take the first word in the normalised message
+                let word = fullMessage[0]
+
+                // To get the defenition of the new word we take all elements from the first onwards seperating them by a space
+                let definition = fullMessage.slice(1).join(' ')
+
+                // To append the new defenition to the file we load the file up
+                fs.readFile('./definitions.json', 'utf-8', (err, data) => {
+
+                    // If theres an error throw it
                     if (err) throw err
 
-                    let obj = JSON.parse(data)
-                    obj.defenitions.push({
+                    // Load the current information stored in the file
+                    let information = JSON.parse(data)
+
+                    // Append the new defenition to the object
+                    information.definitions.push({
                         word: word,
-                        defenition: defenition
+                        definition: definition
                     })
 
-                    fs.writeFile("./defenition.json", JSON.stringify(obj), 'utf-8', (err) => {
+
+                    // Overwrite the current JSON in the file so it contains the new definition
+                    fs.writeFile('./definitions.json', JSON.stringify(information), 'utf-8', (err) => {
+
+                        // If theres an error throw it
                         if (err) throw err
 
-                        sender.send(`${word} added to defenitions list!`)
+                        // Inform the user that the new definition has been added
+                        sender.send(`${word} added to definitions list`)
                     })
+
                 })
+
                 break
+
             // This command will inform the user of the current username of this bot (feels weird typing in the third person)
             case '!INFO':
                 let creator = client.users.get(config.authorID)
                 sender.send(`I am a discord bot created by ${creator.username} using the discord.js module!`)
                 break
-            
+
             // This command will grab a list of people with Admin privelages and inform the user of their usernames
             // and will also get a list of people with Admin privelages who are online at the moment
             /*
@@ -100,18 +133,18 @@ client.on('message', message => {
                 // This is the list of all mods but filtered to only contain those that are also currently online on discord
                 // this doesn't include people on DnD or Idle or Invisible (could filter this but unless the person is online they might not reply?)
                 const onlineMods = allMods.filter(mod => mod.user.presence.status == 'online')
-                
+
                 // We add the found mods to the mods result mapping it to only add their username
                 // (to avoid people getting loads of notifications from being mentioned all the time)
                 modsResult += allMods.map(mod => mod.user.username).join(', ')
 
                 // We do the same as above but this time to the filtered list containing only online mods
                 onlineModsResult += onlineMods.map(mod => mod.user.username).join(', ')
-                
+
                 // We then send both lists back to the user
                 sender.send(modsResult + '\n \n' + onlineModsResult)
                 break
-            
+
             // This command will give the user a link to the projects github!
             case '!SOURCE':
                 sender.send(`I am open source! Github: https://github.com/LiamSutton/discord-bot`)
@@ -128,9 +161,10 @@ client.on('message', message => {
             case '!HELP':
                 sender.send("Commands: !hi, !mods, !source, !info, !tmas and of course you allready know about the !help command")
                 break
+
             // If the command isn't recognised, let the user know
             default:
-            sender.send(`Hmm.. I didnt quite get that, to show all my commands type '!help'`)
+                sender.send(`Hmm.. I didnt quite get that, to show all my commands type '!help'`)
         }
     }
 })
