@@ -1,11 +1,12 @@
 const discord = require('discord.js')
+const fs = require('fs')
 const config = require('./config.json')
 const tmas = require('./tma.json')
 const client = new discord.Client()
 
 // When the bot is ready for use
 client.on('ready', () => {
-    console.log("OU-HELPER-BOT LOADED") 
+    console.log("OU-HELPER-BOT LOADED")
 })
 
 // When the bot recieves a message
@@ -27,7 +28,7 @@ client.on('message', message => {
     if (isCommand) {
 
         // To avoid any issues with caps / no caps, all commands will be converted to upper case to avoid this
-        let command = message.content.toUpperCase()
+        let command = message.content.toUpperCase().split(' ')[0]
 
         // Determine which command the user is requesting, if it doesnt match any, inform the user of this
 
@@ -42,6 +43,39 @@ client.on('message', message => {
                 sender.send(`Hi there ${sender.username} how are you!?`)
                 break
             
+            case '!DEFENITIONS':
+                fs.readFile('./defenition.json', 'utf-8', (err, data) => {
+                    if (err) throw err
+
+                    let obj = JSON.parse(data)
+                    let result = ''
+                    obj.defenitions.forEach(defenition => result += `${defenition.word} : ${defenition.defenition} \n \n`)
+
+                    sender.send(result)
+                })
+                break
+
+            case '!DEFINE':
+                let fullMessage = message.content.split(' ').filter(word => word != command.toLowerCase())
+                let word = fullMessage[0]
+                let defenition = fullMessage.slice(1).join(" ")
+
+                fs.readFile('./defenition.json', 'utf-8', (err, data) => {
+                    if (err) throw err
+
+                    let obj = JSON.parse(data)
+                    obj.defenitions.push({
+                        word: word,
+                        defenition: defenition
+                    })
+
+                    fs.writeFile("./defenition.json", JSON.stringify(obj), 'utf-8', (err) => {
+                        if (err) throw err
+
+                        sender.send(`${word} added to defenitions list!`)
+                    })
+                })
+                break
             // This command will inform the user of the current username of this bot (feels weird typing in the third person)
             case '!INFO':
                 let creator = client.users.get(config.authorID)
