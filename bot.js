@@ -44,7 +44,7 @@ client.on('message', message => {
                 break
 
             // A command to list all of the definitions for words that people may have dificulty with
-            case '!DEFINITIONS':
+            case '!ALLDEFINITIONS':
 
                 // Read the file containing all of the current definitions
                 fs.readFile('./definitions.json', 'utf-8', (err, data) => {
@@ -63,6 +63,37 @@ client.on('message', message => {
 
                     // After all the definitions have been gathered send them to the user
                     sender.send(result)
+                })
+                break
+            
+            // This command will allow the user to search for a specific definition
+            case '!DEFINITION':
+                
+                // To get the word the user is searching for we split the message into an array and grab the 2nd item (1's index)
+                let searchTerm = message.content.split(' ')[1]
+                
+                // We load the json file that contains all of the current definitions
+                fs.readFile('./definitions.json', 'utf-8', (err, data) => {
+
+                    // If there's an error throw it
+                    if (err) throw err
+
+                    // Parse the information held in the file
+                    let information = JSON.parse(data)
+
+                    // To find the definition the user is after we filter the list to only contain definitions which word matches the search term
+                    // and grab the first one
+                    let find = information.definitions.filter(definition => definition.word == searchTerm)[0]
+                    
+                    // We know that if the definition has been found the find variable will not be undefined
+                    let found = find != undefined
+
+                    // if the definition was found, send it to the user, otherwise inform them of this and prompt them to add to the list if they find it out!
+                    if (found) {
+                        sender.send(`${find.word} : ${find.definition}`)
+                    } else {
+                        sender.send("Hmmm, I dont seem to have a definition for that word,\nif you figure it out add it to the ones I know using the !DEFINE command :smiley:")
+                    }
                 })
                 break
 
