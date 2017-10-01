@@ -1,12 +1,3 @@
 {
-    "definitions": [
-        {
-            "word": "json",
-            "definition": "javascript object notation"
-        },
-        {
-            "word": "sql",
-            "definition": "a language used to talk to databases"
-        }
-    ]
+    "definitions": []
 }

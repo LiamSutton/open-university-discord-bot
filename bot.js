@@ -1,4 +1,4 @@
-"use strict"
+
 
 const discord = require('discord.js')
 const fs = require('fs')
@@ -10,6 +10,8 @@ const client = new discord.Client()
 client.on('ready', () => {
     console.log("OU-HELPER-BOT LOADED")
     
+    // Inform the Guild that the bot is now online
+    client.guilds.find("name", "Test").channels.find("name", "general").send("Hello World!")
 })
 
 // When the bot recieves a message
@@ -127,6 +129,8 @@ client.on('message', message => {
                         definition: definition
                     })
 
+                    // Alert the Guild that the bot will be restarting
+                    client.guilds.find("name", "Test").channels.find("name", "general").send("Just restarting beep boop and such")
 
                     // Overwrite the current JSON in the file so it contains the new definition
                     fs.writeFile('./definitions.json', JSON.stringify(information), 'utf-8', (err) => {
