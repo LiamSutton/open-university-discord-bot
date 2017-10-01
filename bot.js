@@ -49,34 +49,33 @@ client.on('message', message => {
                 break
             
             // This command will grab a list of people with Admin privelages and inform the user of their usernames
+            // and will also get a list of people with Admin privelages who are online at the moment
             /*
             TODO:
             1) Rewrite code so it can be used for multiple guilds (possibly) or to find diferent roles
-            2) Code seems kinda janky, look into cleaner ways to do this 
             */
             case '!MODS':
-                // String to hold the list of results
-                let result = "List of Mods: "
-                let online = "List of online Mods: "
+                // Create two strings that will hold the users that are mods / mods who are online at the moment
+                let modsResult = 'All Mods: '
+                let onlineModsResult = 'All Online Mods: '
 
-                // Reason this line is long is because when this command was used through PM it crashed the app!
-                // So instead of searching through the sender we search relative to the bot's guild!
-                let admins = client.guilds.find("name", "Test").roles.find("name", "Admin").members
+                // The reason this line of code is quite long is that when this message was sent through PM it crashed!
+                // so to prevent that we get the admins from the context of the guild through the bot rather than the sender of the message
+                const allMods = client.guilds.find('name', 'Test').roles.find('name', 'Admin').members
 
-                // Once we have the list of all admins, filter the list to only include admins that are online at that moment
-                let onlineAdmins = admins.filter(admin => admin.presence.status == "online")
+                // This is the list of all mods but filtered to only contain those that are also currently online on discord
+                // this doesn't include people on DnD or Idle or Invisible (could filter this but unless the person is online they might not reply?)
+                const onlineMods = allMods.filter(mod => mod.user.presence.status == 'online')
                 
-                // Iterate over the found results and add them to the result string (seperating them with ', ')
-                admins.forEach(admin => result += admin.user.username + ", ")
-                onlineAdmins.forEach(admin => online += admin.user.username + ", ")
+                // We add the found mods to the mods result mapping it to only add their username
+                // (to avoid people getting loads of notifications from being mentioned all the time)
+                modsResult += allMods.map(mod => mod.user.username).join(', ')
 
-                // The reason for this is because the last result being added in the loop will add an extra ', ' to the string
-                // We just remove this ¯\_(ツ)_/¯
-                result = result.substr(0, result.length -2)
-                online = online.substr(0, online.length -2)
+                // We do the same as above but this time to the filtered list containing only online mods
+                onlineModsResult += onlineMods.map(mod => mod.user.username).join(', ')
                 
-                // Concatenate the two collection's together and send them to the user
-                sender.send(result + "\n" + online)
+                // We then send both lists back to the user
+                sender.send(modsResult + '\n \n' + onlineModsResult)
                 break
             
             // This command will give the user a link to the projects github!
