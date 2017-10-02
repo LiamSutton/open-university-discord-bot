@@ -1,224 +1,109 @@
-
-
-const discord = require('discord.js')
 const fs = require('fs')
-const config = require('./config.json')
-const tmas = require('./tma.json')
-const client = new discord.Client()
 
-// When the bot is ready for use
-client.on('ready', () => {
-    console.log("OU-HELPER-BOT LOADED")
+module.exports = {
+    actions: {
+        greetGuild: (client) => {
+            client.guilds.find('name', 'Test').channels.find('name', 'general').send('Hello World!')
+        },
 
-    // Inform the Guild that the bot is now online
-    client.guilds.find("name", "Test").channels.find("name", "general").send("Hello World!")
-})
-
-// When the bot recieves a message
-client.on('message', message => {
-    // Capture the sender of the message
-    let sender = message.author
-
-    // Determine if the message should be interpreted as a command (all commands start with !)
-    let isCommand = message.content.startsWith(config.prefix)
-
-    // If the sender of the message is a bot, ignore it
-    if (sender.bot) return
-
-    // Log that a message was recieved and who the message was sent from
-    console.log(`Message recieved from ${sender.username}`)
-
-    // If the message will be treated as a command
-    if (isCommand) {
-
-        // To avoid any issues with caps / no caps, all commands will be converted to upper case to avoid this
-        let command = message.content.toUpperCase().split(' ')[0]
-
-        // Determine which command the user is requesting, if it doesnt match any, inform the user of this
-
-        /*
-        IMPORTANT:
-        Most (if not all) command responses will be sent through PM to avoid the text chat of a channel being cluttered with bot messages! 
-        */
-        switch (command) {
-
-            // Simple command to greet the user
-            case '!HI':
+        commands: {
+            hi: (sender) => {
                 sender.send(`Hi there ${sender.username} how are you!?`)
-                break
+            },
 
-            // A command to list all of the definitions for words that people may have dificulty with
-            case '!ALLDEFINITIONS':
+            source: (sender) => {
+                sender.send(`I am open source, get involved at ${module.exports.information.github}`)
+            },
 
-                // Read the file containing all of the current definitions
+            info: (sender, author) => {
+                sender.send(`I am a discord bot created by ${author.username} using Node.Js!`)
+            },
+
+            tmas: (sender) => {
+                let result = 'TMA LIST: \n \n'
+                
+                module.exports.information.tmas.forEach(tma => result += `Name: ${tma.name} \nCut-off date:  ${tma.date} \n \n`)
+
+                sender.send(result)
+            },
+
+            admins: (client, sender) => {
+
+                let adminsResult = 'All Admins: '
+                let onlineAdminsResult = 'All Online Admins: '
+
+                const admins = client.guilds.find('name', 'Test').roles.find('name', 'Admin').members
+                const onlineAdmins = admins.filter(admin => admin.user.presence.status == 'online')
+
+                adminsResult += admins.map(admin => admin.user.username).join(', ')
+                onlineAdminsResult += onlineAdmins.map(admin => admin.user.username).join(', ')
+
+                sender.send(`${adminsResult} \n \n${onlineAdminsResult}`)
+            },
+
+            define: (message, sender) => {
+                message = message.split(' ').splice(1)
+
+                let word = message[0]
+                let definition = message.splice(1).join(' ')
+
                 fs.readFile('./definitions.json', 'utf-8', (err, data) => {
-
-                    // if there is an issue with this throw the error
                     if (err) throw err
 
-                    // Parse the information held inside the file
                     let information = JSON.parse(data)
 
-                    // Create an empty string to hold the definitions
-                    let result = ''
-
-                    // For every definition, append the word to the results string formatted as so (word : definition)
-                    information.definitions.forEach(definition => result += `${definition.word} : ${definition.definition} \n \n`)
-
-                    // After all the definitions have been gathered send them to the user
-                    sender.send(result)
-                })
-                break
-
-            // This command will allow the user to search for a specific definition
-            case '!DEFINITION':
-
-                // To get the word the user is searching for we split the message into an array and grab the 2nd item (1's index)
-                let searchTerm = message.content.split(' ')[1]
-
-                // We load the json file that contains all of the current definitions
-                fs.readFile('./definitions.json', 'utf-8', (err, data) => {
-
-                    // If there's an error throw it
-                    if (err) throw err
-
-                    // Parse the information held in the file
-                    let information = JSON.parse(data)
-
-                    // To find the definition the user is after we filter the list to only contain definitions which word matches the search term
-                    // and grab the first one
-                    let find = information.definitions.filter(definition => definition.word == searchTerm)[0]
-
-                    // We know that if the definition has been found the find variable will not be undefined
-                    let found = find != undefined
-
-                    // if the definition was found, send it to the user, otherwise inform them of this and prompt them to add to the list if they find it out!
-                    if (found) {
-                        sender.send(`${find.word} : ${find.definition}`)
-                    } else {
-                        sender.send("Hmmm, I dont seem to have a definition for that word,\nif you figure it out add it to the ones I know using the !DEFINE command :smiley:")
-                    }
-                })
-                break
-
-            case '!DEFINE':
-                //TODO: Tidy up and refactor possibly to ensure no duplicates can be added
-
-                // To get both the word to define and the defenition we split the recieved message into an array
-                // we then filter the array to only include words that aren't the command (!DEFINE)
-                let fullMessage = message.content.split(' ').filter(word => word != command.toLowerCase())
-
-                // To get the word to define we simply take the first word in the normalised message
-                let word = fullMessage[0]
-
-                // To get the defenition of the new word we take all elements from the first onwards seperating them by a space
-                let definition = fullMessage.slice(1).join(' ')
-
-                // To append the new defenition to the file we load the file up
-                fs.readFile('./definitions.json', 'utf-8', (err, data) => {
-
-                    // If theres an error throw it
-                    if (err) throw err
-
-                    // Load the current information stored in the file
-                    let information = JSON.parse(data)
-
-                    // Append the new defenition to the object
                     information.definitions.push({
                         word: word,
                         definition: definition
                     })
 
-                    // Alert the Guild that the bot will be restarting
-                    client.guilds.find("name", "Test").channels.find("name", "general").send("Just restarting beep boop and such")
-
-                    // Overwrite the current JSON in the file so it contains the new definition
                     fs.writeFile('./definitions.json', JSON.stringify(information), 'utf-8', (err) => {
-
-                        // If theres an error throw it
                         if (err) throw err
 
-                        // Inform the user that the new definition has been added
-                        sender.send(`${word} added to definitions list`)
+                        sender.send(`${word} has been added to the definitions list!`)
                     })
-
                 })
 
-                break
+            },
 
-            // This command will inform the user of the current username of this bot (feels weird typing in the third person)
-            case '!INFO':
-                let creator = client.users.get(config.authorID)
-                sender.send(`I am a discord bot created by ${creator.username} using the discord.js module!`)
-                break
+            alldefinitions: (sender) => {
+                fs.readFile('./definitions.json', 'utf-8', (err, data) => {
+                    if (err) throw err
 
-            // This command will grab a list of people with Admin privelages and inform the user of their usernames
-            // and will also get a list of people with Admin privelages who are online at the moment
-            /*
-            TODO:
-            1) Rewrite code so it can be used for multiple guilds (possibly) or to find diferent roles
-            */
-            case '!MODS':
-                // Create two strings that will hold the users that are mods / mods who are online at the moment
-                let modsResult = 'All Mods: '
-                let onlineModsResult = 'All Online Mods: '
+                    let information = JSON.parse(data)
 
-                // The reason this line of code is quite long is that when this message was sent through PM it crashed!
-                // so to prevent that we get the admins from the context of the guild through the bot rather than the sender of the message
-                const allMods = client.guilds.find('name', 'Test').roles.find('name', 'Admin').members
+                    let results = ''
 
-                // This is the list of all mods but filtered to only contain those that are also currently online on discord
-                // this doesn't include people on DnD or Idle or Invisible (could filter this but unless the person is online they might not reply?)
-                const onlineMods = allMods.filter(mod => mod.user.presence.status == 'online')
+                    information.definitions.forEach(definition => results += `${definition.word} : ${definition.definition} \n \n`)
 
-                // We add the found mods to the mods result mapping it to only add their username
-                // (to avoid people getting loads of notifications from being mentioned all the time)
-                modsResult += allMods.map(mod => mod.user.username).join(', ')
+                    sender.send(results)
+                })
+            },
 
-                // We do the same as above but this time to the filtered list containing only online mods
-                onlineModsResult += onlineMods.map(mod => mod.user.username).join(', ')
-
-                // We then send both lists back to the user
-                sender.send(modsResult + '\n \n' + onlineModsResult)
-                break
-
-            // This command will give the user a link to the projects github!
-            case '!SOURCE':
-                sender.send(`I am open source! Github: https://github.com/LiamSutton/discord-bot`)
-                break
-
-            // This command will give the user a list of all the tma's for the module with their cutt-off date
-            case '!TMAS':
-                let results = ""
-                tmas.assignments.forEach(assignment => results += `Name: ${assignment.name}\nCut-off date: ${assignment.end} \n\n`)
-                sender.send(results)
-                break
-
-            // This command will give the user a list of all the commands the bot can use
-            case '!HELP':
-                let result = `Available Commands: \n \n`
-                result += `!hi : This command will simply greet you! \n \n`
-                result += `!tmas : This command will list all of the TMA's for this module including their cut-off dates! \n \n`
-                result += `!source : This command will provide you with a link to the github page for this project so you can contribute! \n \n`
-                result += `!mods : This command will provide you with a list of all the Admins for the server and a list of all the Admins currenly online! \n \n`
-                result += `!info : This command will provide you with some basic info about the bot! \n \n`
-                result += `!alldefinitions : This command will list all the definitians of jargon-y words I know and fellow students have taught me! \n \n`
-                result += `!definition : This command will let you search for a specific definition to use it type the command followed by a space and then the word you're searching for! eg: !definition test \n \n`
-                result += `!define : This command will allow you to teach me a new word and its definition to help your fellow students, to use this type the command followed by a space and then the word you want to teach me followed by another space then just type a sentence with the definition of it (you can use spaces!) eg: !define test this is a test \n \n`
-                result += `!help : Well you clearly allready know this command!, this will simply list all of my currently known commands to you :smiley:`
-                sender.send(result)
-                break
-
-            // If the command isn't recognised, let the user know
-            default:
-                sender.send(`Hmm.. I didnt quite get that, to show all my commands type '!help'`)
+            unknown: (sender) => {
+                sender.send('Hmm.. I dont understand that command, to get a list of all my commands type !help')
+            }
         }
+    },
+
+    information: {
+        github: 'https://github.com/LiamSutton/discord-bot',
+        
+        tmas: [
+            {
+                name: 'TMA 01',
+                date: '7th December 2017'
+            },
+
+            {
+                name: 'TMA 02',
+                date: '22nd February 2018'
+            },
+
+            {
+                name: 'TMA 03',
+                date: '3rd May 2018'
+            }
+        ]
     }
-})
-
-// When a new person joins the guild, the bot will introduce itself!
-client.on('guildMemberAdd', member => {
-    member.send("Hi there I'm the ou-helper-bot, to get my commands list just type !help")
-})
-
-client.login(config.token)
+}
