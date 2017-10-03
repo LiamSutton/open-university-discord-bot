@@ -50,6 +50,10 @@ client.on('message', (message) => {
             bot.actions.commands.define(message.content, sender)
             break
 
+            case '!definition':
+            bot.actions.commands.defenition(message.content, sender)
+            break
+
             case '!alldefinitions':
             bot.actions.commands.alldefinitions(sender)
             break

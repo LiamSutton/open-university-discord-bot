@@ -66,6 +66,26 @@ module.exports = {
 
             },
 
+            defenition: (message, sender) => {
+                let searchTerm = message.split(' ')[1]
+
+                fs.readFile('./definitions.json', 'utf-8', (err, data) => {
+                    if (err) throw err
+
+                    let information = JSON.parse(data)
+
+                    let find = information.definitions.filter(definition => definition.word == searchTerm)[0]
+
+                    let found = find != undefined
+
+                    if (found) {
+                        sender.send(`${find.word} : ${find.definition}`)
+                    } else {
+                        sender.send('Hmmm I dont have a definition for that, if you figure it out you can teach it me by using the !define command')
+                    }
+                })
+            },
+
             alldefinitions: (sender) => {
                 fs.readFile('./definitions.json', 'utf-8', (err, data) => {
                     if (err) throw err
