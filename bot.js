@@ -292,6 +292,16 @@ module.exports = {
             },
 
             {
+                name: '!addlink',
+                information: 'This command lets the user add a new link by giving the bot a description of it and the url, eg: !addlink this is a link to google https://google.com'
+            },
+
+            {
+                name: 'alllinks',
+                information: 'This command will give a list off all the links the bot currently knows'
+            },
+
+            {
                 name: '!tmas',
                 information: 'This command will give a list of all the TMA\'s for this module including their cut-off dates'
             },
