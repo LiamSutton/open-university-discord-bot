@@ -157,6 +157,14 @@ module.exports = {
                 })
             },
 
+            help: (sender) => {
+                let results = 'List of available commands: \n \n'
+
+                module.exports.information.commandList.forEach(command => results += `${command.name} : ${command.information} \n \n`)
+
+                sender.send(results)
+            },
+
             // If a command isnt recognised a PM is sent to the user encouraging them to use the !help command
             unknown: (sender) => {
                 sender.send('Hmm.. I dont understand that command, to get a list of all my commands type !help')
@@ -181,6 +189,53 @@ module.exports = {
             {
                 name: 'TMA 03',
                 date: '3rd May 2018'
+            }
+        ],
+
+        commandList: [
+            {
+                name: '!hi',
+                information: 'This command will greet the sender'
+            },
+
+            {
+                name: '!admins',
+                information: 'This command will list all of the Admins on the server and all of the Admins that are currently online'
+            },
+
+            {
+                name: '!source',
+                information: 'This command will give a link to the projects github repository'
+            },
+
+            {
+                name: '!define',
+                information: 'This command lets the user teach the bot a word and its definition, eg: !define test this is a test definition'
+            },
+
+            {
+                name: '!alldefinitions',
+                information: 'This command will give a list of all the words and definitions the bot currently knows'
+            },
+
+            {
+                name: '!definition',
+                information: 'This command lets the user seach for a specific word to see if the bot knows the definition, eg: !definition test'
+            },
+
+            {
+                name: '!tmas',
+                information: 'This command will give a list of all the TMA\'s for this module including their cut-off dates'
+            },
+
+            {
+                name: '!info',
+                information: 'This command will give the user information such as the creators current user name and the modules used to build the bot'
+            },
+
+            {
+                name: '!help',
+                information: 'Well i\'m sure you can guess what this command does!, it will give you a list of all the commands you can tell me'
             }
         ]
     }

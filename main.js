@@ -81,6 +81,11 @@ client.on('message', (message) => {
             bot.actions.commands.admins(client, sender)
             break
 
+            // This will return a message containing a list of all the commands the bot currently knows
+            case '!help':
+            bot.actions.commands.help(sender)
+            break
+
             // If the command is not recognised by the bot, it will inform the user of this and encourage them to use the '!help' command
             default:
             bot.actions.commands.unknown(sender)
