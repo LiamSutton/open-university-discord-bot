@@ -157,11 +157,79 @@ module.exports = {
                 })
             },
 
+            // This allows the user to teach the bot a new link
+            addlink: (message, sender) => {
+
+                // Get the full message by adding it to a list, splitting it wherever there is a space
+                // and grabbing the first index to the last to avoid capturing the command
+                message = message.split(' ').splice(1)
+
+                // The description of the link will be a sentence that will run from the zeroth index to the second to last index of the list
+                let description = message.splice(0, message.length - 2).join(' ')
+
+                // The url of the link will be the last item in the list
+                let url = message[message.length -1]
+
+                // The list of all known links is loaded up
+                fs.readFile('./links.json', 'utf-8', (err, data) => {
+
+                    // If theres an error reading the file throw it
+                    if (err) throw err
+
+                    // Capture the loaded link information in a variable
+                    let information = JSON.parse(data)
+
+                    // Push a new link to the existing links using the given information
+                    information.links.push({
+                        description: description,
+                        url: url
+                    })
+
+                    // Write all the current link data back to the file including the new link
+                    fs.writeFile('./links.json', JSON.stringify(information), 'utf-8', (err) => {
+
+                        // If theres an error writing to the file throw it
+                        if (err) throw err
+
+                        // Inform the user their link has been added to the list
+                        sender.send(`Link to : ${url} has been added`)
+                    })
+                })
+            },
+
+            // This allows the user to recieve a list of all known links
+            alllinks: (message, sender) => {
+
+                // All current link information is loaded up
+                fs.readFile('./links.json', 'utf-8', (err, data) => {
+
+                    // If theres an error reading the file throw it
+                    if (err) throw err
+
+                    // Capture all the current link information in a variable
+                    let information = JSON.parse(data)
+
+                    // Create an empty string to hold the link information
+                    let results = ''
+
+                    // Iterate over the list and for each link format its data and append it to the string
+                    information.links.forEach(link => results += `${link.description} : ${link.url} \n \n`)
+
+                    // After this has been done PM the user the links
+                    sender.send(results)
+                })
+            },
+
+            // This allows the user to get a list of all known commands and information about them
             help: (sender) => {
+
+                // Create a string to hold the list of commands and the information about them
                 let results = 'List of available commands: \n \n'
 
+                // Iterate over the list of commands and format each one and append it along with information about it to the string
                 module.exports.information.commandList.forEach(command => results += `${command.name} : ${command.information} \n \n`)
 
+                // After all the commands have been gathered, send it to the user through PM
                 sender.send(results)
             },
 

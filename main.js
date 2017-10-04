@@ -76,6 +76,17 @@ client.on('message', (message) => {
             bot.actions.commands.alldefinitions(sender)
             break
 
+            // This will allow the user to add a link to the list of known links by formatting the message as so:
+            // '!addlink sentance describing the link link' 
+            case '!addlink':
+            bot.actions.commands.addlink(message.content, sender)
+            break
+
+            // This will return a message listing all known links along side their descriptions
+            case '!alllinks':
+            bot.actions.commands.alllinks(message.content, sender)
+            break
+
             // This will return a message containing a list of all admins on the server as well as a list of all currently online admins
             case '!admins':
             bot.actions.commands.admins(client, sender)
