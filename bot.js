@@ -9,7 +9,7 @@ module.exports = {
 
         // This will send a greeting message to a specified server in the specified guild
         greetGuild: (client) => {
-            client.guilds.find('name', 'Test').channels.find('name', 'general').send('Hello World!')
+            client.guilds.find('name', 'TM129 2017').channels.find('name', 'lounge').send('Hello World!')
         },
 
 
@@ -48,7 +48,7 @@ module.exports = {
                 let onlineAdminsResult = 'All Online Admins: '
 
                 // We get a list of all the guilds admins through the bot by finding the specific role in the guild then getting all members that have that role
-                const admins = client.guilds.find('name', 'Test').roles.find('name', 'Admin').members
+                const admins = client.guilds.find('name', 'TM129 2017').roles.find('name', 'Admin').members
 
                 // We then filter that data into a new list which only contains the admins that have their status as online
                 const onlineAdmins = admins.filter(admin => admin.user.presence.status == 'online')
