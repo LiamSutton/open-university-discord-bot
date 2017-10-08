@@ -9,7 +9,7 @@ module.exports = {
 
         // This will send a greeting message to a specified server in the specified guild
         greetGuild: (client) => {
-            client.guilds.find('name', 'Test').channels.find('name', 'general').send('Hello World!')
+            client.guilds.find('name', 'TM129 2017').channels.find('name', 'lounge').send('Hello World!')
         },
 
 
