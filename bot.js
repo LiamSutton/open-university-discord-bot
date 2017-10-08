@@ -9,7 +9,7 @@ module.exports = {
 
         // This will send a greeting message to a specified server in the specified guild
         greetGuild: (client) => {
-            client.guilds.find('name', 'TM129 2017').channels.find('name', 'lounge').send('Hello World!')
+            client.guilds.find('name', 'Test').channels.find('name', 'general').send('Hello World!')
         },
 
 
@@ -34,7 +34,7 @@ module.exports = {
             // This will PM the user a list of all the TMA's for the module by iterating over the stored data about them
             tmas: (sender) => {
                 let result = 'TMA LIST: \n \n'
-                
+
                 module.exports.information.tmas.forEach(tma => result += `Name: ${tma.name} \nCut-off date:  ${tma.date} \n \n`)
 
                 sender.send(result)
@@ -70,7 +70,7 @@ module.exports = {
 
                 // The word that the user wants to define will be the zeroth item in the list
                 let word = message[0]
-                
+
                 // The definition for the new word will be everything else in the message so we seperate the word from its definition
                 // and then grab the rest of the message and join the words with a space to make it look like a natural sentence
                 let definition = message.splice(1).join(' ')
@@ -112,7 +112,7 @@ module.exports = {
 
                 // The list of all currently known definitions is loaded up
                 fs.readFile('./definitions.json', 'utf-8', (err, data) => {
-                    
+
                     // If theres an error reading the file throw it
                     if (err) throw err
 
@@ -134,6 +134,54 @@ module.exports = {
                 })
             },
 
+            // This allows the user to remove a definition from the list of known definitions
+            // TODO: make it so that only admins can remove definitions
+            // TODO: make a blacklist so rude words cannot be added to the definitions list
+            removedefinition: (message, sender) => {
+
+                // Get the word the user wants to remove by spliting the message into a list and grab the 1st item
+                // To avoid grabbing the command
+                let searchTerm = message.split(' ')[1]
+
+                // The file of all known definitions is loaded up
+                fs.readFile('./definitions.json', 'utf-8', (err, data) => {
+                    
+                    // If theres an error throw it
+                    if (err) throw err
+
+                    // Capture the current definition information in a variable
+                    let information = JSON.parse(data)
+
+                    // To see if the word the user wants to remove is in the definitions list we filter the list
+                    // into a new list that only contains words that are equal to the searchTerm
+                    let found = information.definitions.filter(definition => definition.word === searchTerm)[0]
+
+                    // If the word is found in the list
+                    if (found != undefined) {
+
+                        // Filter the information list into a new list that only contains words that arent the search term
+                        let newInformation = information.definitions.filter(definition => definition.word != searchTerm)
+
+                        // Set the current definitions information to equal the new filtered information
+                        information.definitions = newInformation
+
+                        // Write these changes to the file containing all the definitions
+                        fs.writeFile('./definitions.json', JSON.stringify(information), 'utf-8', (err, data) => {
+
+                            // If theres an error throw it
+                            if (err) throw err
+
+                            // Inform the user that the word has been found and removed
+                            sender.send(`${searchTerm} has been removed from the definitions list`)
+                        })
+                    } else {
+                        
+                        // If the word was not found inform the user of this
+                        sender.send(`I can't find ${searchTerm} in my definitions list, i guess my job here is done! ;)`)
+                    }
+                })
+            },
+
             // This allows the user to recieve a list of all known definitions
             alldefinitions: (sender) => {
 
@@ -151,7 +199,7 @@ module.exports = {
 
                     // we iterate through the list each time adding the word and its definition to the string formated and seperated
                     information.definitions.forEach(definition => results += `${definition.word} : ${definition.definition} \n \n`)
-                    
+
                     // When this is all over the definitions are sent to the user through PM
                     sender.send(results)
                 })
@@ -168,7 +216,7 @@ module.exports = {
                 let description = message.splice(0, message.length - 2).join(' ')
 
                 // The url of the link will be the last item in the list
-                let url = message[message.length -1]
+                let url = message[message.length - 1]
 
                 // The list of all known links is loaded up
                 fs.readFile('./links.json', 'utf-8', (err, data) => {
@@ -242,7 +290,7 @@ module.exports = {
 
     information: {
         github: 'https://github.com/LiamSutton/discord-bot',
-        
+
         tmas: [
             {
                 name: 'TMA 01',
@@ -289,6 +337,11 @@ module.exports = {
             {
                 name: '!definition',
                 information: 'This command lets the user seach for a specific word to see if the bot knows the definition, eg: !definition test'
+            },
+
+            {
+                name: '!removedefinition',
+                information: 'This command lets the user search for and remove a definition the bot currently knows, eg: !removedefinition test'
             },
 
             {
