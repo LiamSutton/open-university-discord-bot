@@ -96,6 +96,11 @@ client.on('message', (message) => {
             bot.actions.commands.admins(client, sender)
             break
 
+            // This will allow the user to send a message to the author with a suggestion for the bot
+            case `${config.commandPrefix}suggestion`:
+            bot.actions.commands.suggestion(message.content, sender, client.users.get(config.authorID))
+            break
+
             // This will return a message containing a list of all the commands the bot currently knows
             case `${config.commandPrefix}help`:
             bot.actions.commands.help(sender)

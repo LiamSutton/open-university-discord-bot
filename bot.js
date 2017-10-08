@@ -9,7 +9,7 @@ module.exports = {
 
         // This will send a greeting message to a specified server in the specified guild
         greetGuild: (client) => {
-            client.guilds.find('name', 'TM129 2017').channels.find('name', 'lounge').send('Hello World!')
+            client.guilds.find('name', 'Test').channels.find('name', 'general').send('Hello World!')
         },
 
 
@@ -268,6 +268,18 @@ module.exports = {
                 })
             },
 
+            // This allows the user to send a suggestion to the author of the bot
+            suggestion: (message, sender, author) => {
+
+                // We get the suggestion by splitting the message into a list and grabbing everything from the 1st index
+                // We do this to avoid grabbing the command in the message
+                // We then join the list with a space between each message to make it look like a propper sentence
+                let suggestion = message.split(' ').splice(1).join(' ')
+
+                // The suggestion is then sent to the author
+                author.send(`${sender.username}'s suggestion: ${suggestion}`)
+            },
+
             // This allows the user to get a list of all known commands and information about them
             help: (sender) => {
 
@@ -362,6 +374,11 @@ module.exports = {
             {
                 name: '!info',
                 information: 'This command will give the user information such as the creators current user name and the modules used to build the bot'
+            },
+
+            {
+                name: '!suggestion',
+                information: 'This command will allow the user to suggest an improvement or feature for the bot, eg: !suggestion implement a feature to track users grades'
             },
 
             {
