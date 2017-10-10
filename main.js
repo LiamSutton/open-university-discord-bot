@@ -13,6 +13,11 @@ client.on('ready', () => {
     bot.actions.greetGuild(client)
 })
 
+// When a new user joins the guild the bot will personaly greet them
+client.on('guildMemberAdd', (member) => {
+    bot.actions.greetNewMember(member)
+})
+
 // Whenever a message is sent in the guild
 client.on('message', (message) => {
     
