@@ -13,12 +13,12 @@ module.exports = {
             client.guilds.find('name', 'TM129 2017').channels.find('name', 'lounge').send('Hello World!')
 
             // Debug guild
-            // client.guilds.find('name', 'Test').channels.find('name', 'general').send('Hello World')
+            //client.guilds.find('name', 'Test').channels.find('name', 'general').send('Hello World')
         },
 
         // This will send a greeting message to any new user that joins the guild
         greetNewMember: (member) => {
-            member.send(`Hi there ${member.username} im the ou-helper-bot, to get a list of all my commands just type !help :smiley:`)
+            member.send(`Hi there ${member.user.username} im the ou-helper-bot, to get a list of all my commands just type !help :smiley:`)
         },
 
 
